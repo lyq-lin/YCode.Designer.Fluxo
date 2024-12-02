@@ -25,7 +25,9 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
 
     protected override void OnVertical()
     {
-        throw new NotImplementedException();
+        var points = GetLinePoints(this.Parameter.Source.Bottom, this.Parameter.Target.Top);
+
+        this.Points.AddRanage([points.P0, points.P1, points.P2, points.P3]);
     }
 
     protected override void OnCross()
@@ -42,7 +44,8 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
 
         this.Parameter.End = target + new Vector(_spacing * targetDir.X, _spacing * targetDir.Y);
 
-        var connectionDir = GetConnectionDirection(this.Parameter.Start, this.Parameter.SourcePosition, this.Parameter.End);
+        var connectionDir =
+            GetConnectionDirection(this.Parameter.Start, this.Parameter.SourcePosition, this.Parameter.End);
 
         var horizontalConnection = connectionDir.X != 0;
 
@@ -60,7 +63,9 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
         }
 
         var isSameDir = horizontalConnection ? sourceDir.X == targetDir.Y : sourceDir.Y == targetDir.X;
-        var startGreaterThanEnd = horizontalConnection ? this.Parameter.Start.Y > this.Parameter.End.Y : this.Parameter.Start.X > this.Parameter.End.X;
+        var startGreaterThanEnd = horizontalConnection
+            ? this.Parameter.Start.Y > this.Parameter.End.Y
+            : this.Parameter.Start.X > this.Parameter.End.X;
 
         var positiveDir = horizontalConnection ? sourceDir.X == 1 : sourceDir.Y == 1;
         var shouldFlip = positiveDir
@@ -85,8 +90,10 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
         {
             var center = this.Parameter.Start + (this.Parameter.End - this.Parameter.Start) / 2;
 
-            (Point P1, Point P2) verticalSplit = (new Point(center.X, this.Parameter.Start.Y), new Point(center.X, this.Parameter.End.Y));
-            (Point P1, Point P2) horizontalSplit = (new Point(this.Parameter.Start.X, center.Y), new Point(this.Parameter.End.X, center.Y));
+            (Point P1, Point P2) verticalSplit = (new Point(center.X, this.Parameter.Start.Y),
+                new Point(center.X, this.Parameter.End.Y));
+            (Point P1, Point P2) horizontalSplit = (new Point(this.Parameter.Start.X, center.Y),
+                new Point(this.Parameter.End.X, center.Y));
 
             if (horizontalConnection)
             {
@@ -125,7 +132,7 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
                 FluxoLinePosition.Left => new Point(-1, 0),
                 FluxoLinePosition.Bottom => new Point(0, 1),
                 FluxoLinePosition.Right => new Point(1, 0),
-                _ => default,
+                _ => default
             };
 
         static bool IsOppositePosition(FluxoLinePosition sourcePosition, FluxoLinePosition targetPosition)
@@ -137,40 +144,42 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
         }
     }
 
-public override Point GetPoint(double target) { var current = 0d;
-    var start = this.Points[0];
-
-    var length = this.GetLength();
-
-    var targetLength = length * target;
-
-    var prePoint = new Point(start.X, start.Y);
-
-    for (var i = 1; i < this.Points.Count; i++)
+    public override Point GetPoint(double target)
     {
-        var pointToLength = Math.Sqrt(Math.Pow(prePoint.X - this.Points[i].X, 2) +
-                                      Math.Pow(prePoint.Y - this.Points[i].Y, 2));
+        var current = 0d;
+        var start = this.Points[0];
 
-        var distance = Point.Subtract(this.Points[i], prePoint).Length;
+        var length = this.GetLength();
 
-        if (current + distance >= targetLength)
+        var targetLength = length * target;
+
+        var prePoint = new Point(start.X, start.Y);
+
+        for (var i = 1; i < this.Points.Count; i++)
         {
-            var extra = targetLength - current;
+            var pointToLength = Math.Sqrt(Math.Pow(prePoint.X - this.Points[i].X, 2) +
+                                          Math.Pow(prePoint.Y - this.Points[i].Y, 2));
 
-            var factor = extra / distance;
+            var distance = Point.Subtract(this.Points[i], prePoint).Length;
 
-            return new Point(
-                prePoint.X + (factor * (this.Points[i].X - prePoint.X)),
-                prePoint.Y + (factor * (this.Points[i].Y - prePoint.Y)));
+            if (current + distance >= targetLength)
+            {
+                var extra = targetLength - current;
+
+                var factor = extra / distance;
+
+                return new Point(
+                    prePoint.X + (factor * (this.Points[i].X - prePoint.X)),
+                    prePoint.Y + (factor * (this.Points[i].Y - prePoint.Y)));
+            }
+
+            prePoint = this.Points[i];
+
+            current += pointToLength;
         }
 
-        prePoint = this.Points[i];
-
-        current += pointToLength;
+        return prePoint;
     }
-
-    return prePoint;
-}
 
     public override double GetLength()
     {

@@ -146,21 +146,6 @@ public class FluxoLine : Shape
         base.OnPropertyChanged(e);
     }
 
-    protected override void OnRender(DrawingContext drawingContext)
-    {
-        base.OnRender(drawingContext);
-
-        var line = _container.GetLineProvider(_designer.LineType);
-
-        var p = line?.GetPoint(0.1);
-
-        if (p.HasValue)
-        {
-            drawingContext.DrawRectangle(Brushes.Orange, new Pen(Brushes.Transparent, 1),
-                new Rect(p.Value.X - 5, p.Value.Y - 5, 10, 10));
-        }
-    }
-
     private (Point, Point) DrawLine(StreamGeometryContext context, FluxoNode source, FluxoNode target)
     {
         var line = _container.GetLineProvider(_designer.LineType);

@@ -39,6 +39,7 @@
                              Mounted="OnMounted"
                              GridType="Dot"
                              LineType="Step"
+                             Orientation="Vertical"
                              ToolTemplate="{StaticResource ToolDataTemplate}"
                              ItemContainerStyle="{StaticResource FluxoNodeStyle}"
                              Source="{Binding Source}" />
