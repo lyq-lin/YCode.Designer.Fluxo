@@ -38,6 +38,7 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
     private (Point P0, Point P1, Point P2, Point P3) GetLinePoints(Point source, Point target)
     {
         var sourceDir = GetConnectorDirection(this.Parameter.SourcePosition);
+        
         var targetDir = GetConnectorDirection(this.Parameter.TargetPosition);
 
         this.Parameter.Start = source + new Vector(_spacing * sourceDir.X, _spacing * sourceDir.Y);
@@ -59,15 +60,18 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
         if (this.Parameter.SourcePosition == this.Parameter.TargetPosition)
         {
             var p = GetSamePositionPoint();
+            
             return (this.Parameter.Start, p, p, this.Parameter.End);
         }
 
         var isSameDir = horizontalConnection ? sourceDir.X == targetDir.Y : sourceDir.Y == targetDir.X;
+        
         var startGreaterThanEnd = horizontalConnection
             ? this.Parameter.Start.Y > this.Parameter.End.Y
             : this.Parameter.Start.X > this.Parameter.End.X;
 
         var positiveDir = horizontalConnection ? sourceDir.X == 1 : sourceDir.Y == 1;
+        
         var shouldFlip = positiveDir
             ? isSameDir ? !startGreaterThanEnd : startGreaterThanEnd
             : isSameDir
@@ -77,13 +81,16 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
         if (shouldFlip)
         {
             var sourceTarget = new Point(this.Parameter.Start.X, this.Parameter.End.Y);
+            
             var targetSource = new Point(this.Parameter.End.X, this.Parameter.Start.Y);
 
             var pf = horizontalConnection ? sourceTarget : targetSource;
+            
             return (this.Parameter.Start, pf, pf, this.Parameter.End);
         }
 
         var pp = GetSamePositionPoint();
+        
         return (this.Parameter.Start, pp, pp, this.Parameter.End);
 
         (Point P1, Point P2) GetOppositePositionPoints()
@@ -108,6 +115,7 @@ public class FluxoStepLine(FluxoDesigner designer) : FluxoBaseLine(LineType.Step
         Point GetSamePositionPoint()
         {
             var sourceTarget = new Point(this.Parameter.Start.X, this.Parameter.End.Y);
+            
             var targetSource = new Point(this.Parameter.End.X, this.Parameter.Start.Y);
 
             if (horizontalConnection)

@@ -18,8 +18,6 @@ public class FluxoNotifyPropertyChanged : INotifyPropertyChanged
     {
         if (!Equals(field, value))
         {
-            this.OnPropertyChanged(property);
-
             field = value;
 
             this.OnPropertyChanged(property);
